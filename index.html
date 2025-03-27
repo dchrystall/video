@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Test Drive Offer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      margin: 0;
+      background: #000;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      position: relative;
+      width: 90%;
+      max-width: 900px;
+      aspect-ratio: 16 / 9;
+      padding: 8px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #1c1c1e, #2c2c2e);
+      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 12px 30px rgba(0, 0, 0, 0.6);
+    }
+
+    video {
+      width: 100%;
+      height: 100%;
+      border-radius: 16px;
+      display: block;
+    }
+
+    #cta-button {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 14px 32px;
+      background: linear-gradient(135deg, #007aff, #0051cc);
+      border: none;
+      border-radius: 16px;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      display: none;
+    }
+
+    #cta-button:hover {
+      transform: translate(-50%, -52%);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <video id="myVideo" playsinline controls>
+      <source src="https://raw.githubusercontent.com/dchrystall/video/main/MazdaCx50-Joe.mp4" type="video/mp4" />
+      Your browser does not support the video tag.
+    </video>
+
+    <button id="cta-button" onclick="showConfirmation()">
+      Yes, I want a test drive
+    </button>
+  </div>
+
+  <script>
+    const video = document.getElementById('myVideo');
+    const button = document.getElementById('cta-button');
+
+    video.addEventListener('timeupdate', () => {
+      const duration = video.duration || 0;
+      const current = video.currentTime;
+
+      if (duration > 0 && current >= duration - 5) {
+        button.style.display = 'block';
+      } else {
+        button.style.display = 'none';
+      }
+    });
+
+    function showConfirmation() {
+      button.innerText = "Fantastic, you will love the CX-50, we will text you more details";
+      button.style.background = "linear-gradient(135deg, #34C759, #30B354)";
+    }
+  </script>
+
+</body>
+</html>
+
