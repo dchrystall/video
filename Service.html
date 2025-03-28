@@ -1,368 +1,143 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Your Vehicle Service</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body {
-      margin: 0;
-      background: #000;
-      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      overflow: hidden;
-    }
+    <meta charset="UTF-8">
+    <!-- Crucial for responsive design and media queries on mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lexus Video</title>
+    <style>
+        /* Basic styling - you'll need to customize this extensively */
+        body {
+            margin: 0;
+            font-family: sans-serif;
+            background-color: #f0f0f0; /* Example background */
+        }
 
-    .container {
-      position: relative;
-      width: 90%;
-      max-width: 900px;
-      aspect-ratio: 16 / 9;
-      padding: 8px; /* Padding slightly reduces video area */
-      border-radius: 20px;
-      background: linear-gradient(135deg, #1c1c1e, #2c2c2e);
-      box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1), 0 12px 30px rgba(0, 0, 0, 0.6);
-      overflow: hidden; /* Important to contain absolutely positioned children */
-    }
+        .container {
+            max-width: 900px; /* Max width of the content area */
+            margin: 20px auto; /* Center the container with some top/bottom margin */
+            position: relative; /* Needed for absolute positioning of the logo */
+            background-color: #fff; /* Example background for container */
+            box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Optional shadow */
+            padding: 15px; /* Add some padding inside the container */
+            box-sizing: border-box; /* Include padding in width calculation */
+        }
 
-    video {
-      width: 100%;
-      height: 100%;
-      border-radius: 16px; /* Match container inner radius */
-      display: block;
-      object-fit: cover; /* Ensure video covers the area */
-    }
+        #myVideo {
+            display: block; /* Remove extra space below video */
+            width: 100%;   /* Make video responsive */
+            height: auto;  /* Maintain aspect ratio */
+            max-height: 80vh; /* Optional: Limit height, especially in landscape */
+        }
 
-    /* Logo initial position and animation */
-    .logo {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 20%; /* 20% of the container width */
-      transform: translate(-50%, -50%);
-      transition: top 1s ease-out, left 1s ease-out, right 1s ease-out, width 1s ease-out, transform 1s ease-out;
-      z-index: 10;
-      opacity: 1;
-    }
+        .logo {
+            position: absolute; /* Position relative to the container */
+            top: 25px;  /* Adjust position (relative to top padding) */
+            right: 25px; /* Adjust position (relative to right padding) */
+            width: 100px; /* Adjust size as needed */
+            height: auto; /* Maintain aspect ratio */
+            z-index: 10; /* Ensure logo is above video if overlap occurs */
+            display: block; /* Ensure it's treated as a block for positioning */
+            visibility: visible; /* Explicitly make visible */
+            opacity: 1; /* Explicitly make opaque */
+        }
 
-    /* Logo moved to top-right corner */
-    .logo.moved {
-      top: 10px;
-      left: auto; /* Unset left */
-      right: 10px;
-      width: 5%; /* 5% of the container width */
-      transform: translate(0, 0); /* Override centering transform */
-    }
+        .button-container {
+            display: flex;
+            flex-direction: column; /* Stack buttons vertically by default */
+            gap: 10px; /* Space between buttons */
+            align-items: center; /* Center buttons horizontally */
+            padding: 20px 0; /* Add some padding around buttons */
+        }
 
-    /* Button container styling */
-    .button-container {
-      position: absolute;
-      bottom: 10%;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px; /* Reduced gap might look better with fewer buttons */
-      opacity: 0;
-      transition: opacity 0.5s ease;
-      z-index: 20;
-      pointer-events: none;
-      width: 90%;
-    }
+        .button {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            color: white;
+            min-width: 180px; /* Give buttons some minimum width */
+            text-align: center;
+        }
 
-    .button-container.show {
-      opacity: 1;
-      pointer-events: auto;
-    }
+        .green-button {
+            background-color: #4CAF50; /* Green */
+        }
+        .green-button:hover {
+            background-color: #45a049;
+        }
 
-    /* Button styling */
-    .button {
-      padding: 12px 24px;
-      border: none;
-      border-radius: 12px;
-      color: white;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease;
-      box-shadow: 0 4px 10px rgba(0,0,0, 0.3);
-    }
+        .question-button {
+            background-color: #008CBA; /* Blue */
+        }
+        .question-button:hover {
+            background-color: #007ba7;
+        }
 
-    .button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(0,0,0, 0.4);
-    }
+        /* --- Styles for Landscape Orientation --- */
+        @media (orientation: landscape) and (max-height: 500px) { /* Target landscape, especially on shorter devices */
+             .container {
+                /* Example: Maybe less vertical margin in landscape */
+                margin: 10px auto;
+             }
 
-    .button:active {
-      transform: scale(0.97);
-      box-shadow: 0 2px 5px rgba(0,0,0, 0.3);
-    }
+            .logo {
+                /* Example: Maybe make logo slightly smaller in landscape */
+                 width: 80px;
+                 top: 15px;
+                 right: 15px;
+             }
 
-    /* Style for disabled buttons */
-    .button:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-        transform: none; /* Prevent hover/active effects */
-        box-shadow: 0 4px 10px rgba(0,0,0, 0.3); /* Keep base shadow */
-    }
+            .button-container {
+                /* Example: Arrange buttons side-by-side in landscape */
+                flex-direction: row;
+                justify-content: center; /* Center horizontally */
+                padding: 15px 0;
+            }
 
+             #myVideo {
+                /* Ensure video doesn't become excessively tall */
+                 max-height: 75vh; /* Adjust viewport height limit */
+             }
+        }
 
-    .green-button {
-      background: linear-gradient(135deg, #34c759, #2aa14a);
-    }
+        /* --- You could add more breakpoints for different screen sizes --- */
+        /* @media (min-width: 768px) { ... } */
 
-    .question-button {
-      background: linear-gradient(135deg, #007aff, #0058b8);
-    }
-
-    /* Removed .third-button style as it's no longer needed */
-
-    /* Fireworks canvas */
-    .fireworks {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      z-index: 30;
-      border-radius: 16px;
-    }
-
-    /* Confirmation Message styles */
-    .confirmation-message {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: white;
-      background-color: rgba(0, 0, 0, 0.75);
-      padding: 25px 40px;
-      border-radius: 15px;
-      font-size: 22px;
-      font-weight: 600;
-      text-align: center;
-      z-index: 35; /* Above fireworks */
-      opacity: 0; /* Start hidden */
-      pointer-events: none;
-      transition: opacity 0.5s ease-in-out;
-      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
-    }
-
-    /* Class to show the confirmation message */
-    .confirmation-message.show {
-      opacity: 1;
-    }
-
-  </style>
+    </style>
 </head>
 <body>
 
-  <div class="container" id="videoContainer">
-    <video id="myVideo" playsinline controls>
-      <!-- Make sure this path is correct -->
-      <source src="https://raw.githubusercontent.com/dchrystall/video/main/lexusshort.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
+    <div class="container" id="videoContainer">
 
-    <!-- Make sure this path is correct -->
-    <!--<img src="https://dchrystall.github.io/video/lexusLogo.png" alt="Lexus Logo" class="logo" id="logo"> -->
-    <img src="https://raw.githubusercontent.com/dchrystall/video/main/lexusLogo.png" alt="Lexus Logo" class="logo" id="logo">
-    <div class="button-container" id="buttonContainer">
-      <button class="button green-button" id="yesButton">Yes, go ahead</button>
-      <button class="button question-button" id="questionButton">I have a Question</button>
-      <!-- Removed the third button -->
-      <!-- <button class="button third-button" id="thirdButton">Third Button</button> -->
+        <!-- Video Player -->
+        <video id="myVideo" playsinline controls autoplay muted>
+            <!--
+                autoplay: Attempts to play automatically
+                muted: REQUIRED for autoplay to work on most mobile browsers
+                playsinline: Important for iOS to play within the page, not fullscreen
+                controls: Shows default video controls (play/pause, volume, etc.)
+            -->
+            <source src="https://raw.githubusercontent.com/dchrystall/video/main/lexusshort.mp4" type="video/mp4">
+            <!-- Fallback text -->
+            Your browser does not support the video tag.
+        </video>
+
+        <!-- Logo Image -->
+        <!-- Ensure the src URL is correct and quoted -->
+        <img src="https://raw.githubusercontent.com/dchrystall/video/main/lexusLogo.png" alt="Lexus Logo" class="logo" id="logo">
+
+        <!-- Button Container -->
+        <div class="button-container" id="buttonContainer">
+            <button class="button green-button" id="yesButton">Yes, go ahead</button>
+            <button class="button question-button" id="questionButton">I have a Question</button>
+        </div>
+
     </div>
 
-    <canvas id="fireworksCanvas" class="fireworks"></canvas>
-
-    <!-- Confirmation message element -->
-    <div id="confirmationText" class="confirmation-message">
-        We will go right ahead
-    </div>
-
-  </div>
-
-  <script>
-    const video = document.getElementById('myVideo');
-    const logo = document.getElementById('logo');
-    const buttonContainer = document.getElementById('buttonContainer');
-    const yesButton = document.getElementById('yesButton');
-    const questionButton = document.getElementById('questionButton');
-    // Removed reference to thirdButton
-    // const thirdButton = document.getElementById('thirdButton');
-    const fireworksCanvas = document.getElementById('fireworksCanvas');
-    const videoContainer = document.getElementById('videoContainer');
-    const confirmationText = document.getElementById('confirmationText');
-    const ctx = fireworksCanvas.getContext('2d');
-
-    let logoMoveTimerId = null;
-
-    // Adjust canvas size to match container
-    function resizeCanvas() {
-        const containerWidth = videoContainer.offsetWidth;
-        const containerHeight = videoContainer.offsetHeight;
-        fireworksCanvas.width = containerWidth;
-        fireworksCanvas.height = containerHeight;
-    }
-
-    window.addEventListener('load', resizeCanvas);
-    window.addEventListener('resize', resizeCanvas);
-
-    // Function to move the logo
-    function moveLogo() {
-      logo.classList.add('moved');
-    }
-
-    // Function to reset logo
-    function resetLogo() {
-        logo.classList.remove('moved');
-        if (logoMoveTimerId) {
-            clearTimeout(logoMoveTimerId);
-            logoMoveTimerId = null;
-        }
-    }
-
-    // Function to check and SHOW buttons
-    function checkButtonVisibility() {
-        if (video.duration && !isNaN(video.duration) && video.duration > 0) {
-            if (video.duration - video.currentTime <= 3) {
-                if (!buttonContainer.classList.contains('show')) {
-                   buttonContainer.classList.add('show');
-                }
-            }
-        } else {
-            buttonContainer.classList.remove('show');
-        }
-    }
-
-    // --- Event Listeners ---
-
-    video.addEventListener('play', () => {
-        if (!logo.classList.contains('moved') && !logoMoveTimerId && video.currentTime < 3) {
-            logoMoveTimerId = setTimeout(() => {
-                moveLogo();
-                logoMoveTimerId = null;
-            }, 3000);
-        }
-        checkButtonVisibility();
-
-        confirmationText.classList.remove('show');
-        // Re-enable remaining buttons
-        yesButton.disabled = false;
-        questionButton.disabled = false;
-        // Removed thirdButton disable/enable
-        // thirdButton.disabled = false;
-    });
-
-    video.addEventListener('pause', () => {
-        if (logoMoveTimerId) {
-            clearTimeout(logoMoveTimerId);
-            logoMoveTimerId = null;
-        }
-        checkButtonVisibility();
-    });
-
-    video.addEventListener('timeupdate', checkButtonVisibility);
-
-    video.addEventListener('loadedmetadata', () => {
-        resizeCanvas();
-        resetLogo();
-        checkButtonVisibility();
-        if (video.duration && (video.currentTime < video.duration - 3)) {
-             buttonContainer.classList.remove('show');
-        }
-        confirmationText.classList.remove('show');
-    });
-
-    video.addEventListener('ended', () => {
-        resetLogo();
-        if (!buttonContainer.classList.contains('show')) {
-            buttonContainer.classList.add('show');
-        }
-    });
-
-    video.addEventListener('seeking', () => {
-         confirmationText.classList.remove('show');
-    });
-
-     video.addEventListener('seeked', () => {
-        // Logo Reset/Move Logic
-        if(video.currentTime >= 3 && !logo.classList.contains('moved')) {
-            moveLogo();
-        } else if (video.currentTime < 3 && logo.classList.contains('moved')){
-            resetLogo();
-        }
-
-        // Button Visibility Logic on Seek
-        if (video.duration && !isNaN(video.duration) && video.duration > 0) {
-             checkButtonVisibility();
-             if (video.currentTime < (video.duration - 3)) {
-                 buttonContainer.classList.remove('show');
-             }
-        } else {
-             buttonContainer.classList.remove('show');
-        }
-        confirmationText.classList.remove('show');
-    });
-
-
-    // --- Button Actions ---
-
-    // Open messaging app
-    questionButton.addEventListener('click', () => {
-      window.location.href = 'sms:5083108004';
-    });
-
-    // Updated: Fireworks, Text Display, and Close Tab on "Yes" button click
-    yesButton.addEventListener('click', () => {
-      createFireworks();
-      confirmationText.classList.add('show');
-
-      // Disable remaining buttons
-      yesButton.disabled = true;
-      questionButton.disabled = true;
-      // Removed thirdButton disable
-      // thirdButton.disabled = true;
-
-      setTimeout(() => {
-        confirmationText.classList.remove('show');
-        console.log("Attempting to close tab...");
-        window.close();
-        // Note: window.close() likely won't work unless the script opened the window.
-      }, 3000);
-    });
-
-    // --- Fireworks Animation ---
-    function createFireworks() {
-        const particles = [];
-        const numParticles = 100;
-        const explosionX = fireworksCanvas.width / 2;
-        const explosionY = fireworksCanvas.height / 2;
-        const colors = ['#ff0044', '#00ff44', '#4400ff', '#ff8800', '#00ff88', '#ffffff'];
-
-        function Particle(x, y, color) {
-            this.x = x; this.y = y; this.color = color; this.size = Math.random() * 3 + 1; const angle = Math.random() * Math.PI * 2; const speed = Math.random() * 5 + 2; this.speedX = Math.cos(angle) * speed; this.speedY = Math.sin(angle) * speed; this.life = 80 + Math.random() * 40; this.initialLife = this.life; this.gravity = 0.08;
-        }
-        Particle.prototype.update = function() {
-            this.life--; this.speedY += this.gravity; this.x += this.speedX; this.y += this.speedY; this.opacity = Math.max(0, this.life / this.initialLife);
-        };
-        Particle.prototype.draw = function() {
-             ctx.fillStyle = this.color; ctx.globalAlpha = this.opacity; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1.0;
-        };
-        for (let i = 0; i < numParticles; i++) { particles.push(new Particle(explosionX, explosionY, colors[Math.floor(Math.random() * colors.length)])); }
-        function animateFireworks() {
-             ctx.fillStyle = 'rgba(0, 0, 0, 0.15)'; ctx.fillRect(0, 0, fireworksCanvas.width, fireworksCanvas.height); let stillAlive = false; for (let i = particles.length - 1; i >= 0; i--) { particles[i].update(); particles[i].draw(); if (particles[i].life > 0) { stillAlive = true; } else { particles.splice(i, 1); } } if (stillAlive) { requestAnimationFrame(animateFireworks); }
-        }
-        requestAnimationFrame(animateFireworks);
-    }
-
-  </script>
+    <!-- You might add JavaScript here later if needed -->
+    <!-- <script src="your_script.js"></script> -->
 
 </body>
 </html>
